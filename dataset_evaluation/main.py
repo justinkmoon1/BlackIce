@@ -123,9 +123,9 @@ def get_trained_model(experiment, weights):
     return model
 
 # 경로 설정
-DATA_PATH = "datasets/COCO/train2017"
-ANNOT_PATH = "datasets/COCO/annotations/ID2TR.json"
-MODEL_PATH = "YOLOX_outputs/yolox_tiny/best_ckpt.pth"
+DATA_PATH = "./Test_Black/test"
+ANNOT_PATH = "ID2TE_Black.json"
+MODEL_PATH = "YOLOX_outputs/yolox_tiny/BG112.pth"
 
 # data read
 with open(ANNOT_PATH, 'r') as f:
@@ -141,17 +141,30 @@ ckpt = torch.load(MODEL_PATH, map_location = 'cpu')
 model.load_state_dict(ckpt["model"])
 predictor = Predictor(model, exps)
 cnt = 0
+gt_boxes = {0: 0, 1: 0, 2: 0, 3:0, 4: 0}
 for i in range(len(img_list)):
+    if i > 5:
+        break
     actual_bbox, actual_class = evaluator.read_data(DATA_PATH + "/" + img_list[i], i)
-    cnt += len(actual_bbox)
+    print(f"For image {i}: GT = {len(actual_bbox)}")
+    for c in actual_class:
+        gt_boxes[c] += 1
     prediction_list, info = predictor.inference(DATA_PATH + "/" + img_list[i])
+    #print(len(prediction_list))
+    result_image, result_box, result_class = predictor.visual(prediction_list, info)
+    print(f"For image {i} : {len(result_box)}")
+    cv2.imwrite(f"YOLOX_outputs/yolox_tiny/vis_res/img{i}.jpg", result_image)
     if prediction_list == None:
         continue
-    prediction_bbox, prediction_class = evaluator.prediction_process(prediction_list, info)
-    print(len(prediction_class))
-    evaluator.put_data(prediction_bbox, prediction_class, actual_bbox, actual_class)
+    #prediction_bbox, prediction_class = evaluator.prediction_process(result, info)
+    
+    # evaluator.put_data(prediction_bbox, prediction_class, actual_bbox, actual_class)
+    evaluator.put_data(result_box, result_class, actual_bbox, actual_class)
+fp = evaluator.cnts[0][0]
+tp = evaluator.cnts[0][1]
 
-print(evaluator.cnts, cnt, evaluator.fp_same, evaluator.fp_dif)
+print(f"{evaluator.cnts}\n tp: {tp}, fp: {fp}, tn: {gt_boxes[0] - tp}")
+print(f"ground truth: {gt_boxes}")
 # 전체 metric 계산
 #ap, raw_metric, f1_score = evaluator.get_results()
 

@@ -9,13 +9,16 @@ __all__ = ["vis"]
 
 
 def vis(img, boxes, scores, cls_ids, conf=0.5, class_names=None):
-
+    final_boxes = []
+    final_classes = []
     for i in range(len(boxes)):
         box = boxes[i]
         cls_id = int(cls_ids[i])
         score = scores[i]
         if score < conf:
             continue
+        final_boxes.append(box)
+        final_classes.append(cls_id)
         x0 = int(box[0])
         y0 = int(box[1])
         x1 = int(box[2])
@@ -39,7 +42,7 @@ def vis(img, boxes, scores, cls_ids, conf=0.5, class_names=None):
         )
         cv2.putText(img, text, (x0, y0 + txt_size[1]), font, 0.4, txt_color, thickness=1)
 
-    return img
+    return img, final_boxes, final_classes
 
 
 _COLORS = np.array(

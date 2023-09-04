@@ -183,8 +183,8 @@ class Predictor(object):
         cls = output[:, 6]
         scores = output[:, 4] * output[:, 5]
 
-        vis_res = vis(img, bboxes, scores, cls, cls_conf, self.cls_names)
-        return vis_res
+        vis_res, out_box, out_class = vis(img, bboxes, scores, cls, cls_conf, self.cls_names)
+        return vis_res, out_box, out_class
 
 
 def image_demo(predictor, vis_folder, path, current_time, save_result):
@@ -198,9 +198,10 @@ def image_demo(predictor, vis_folder, path, current_time, save_result):
         result_image = predictor.visual(outputs, img_info, predictor.confthre)
         #result_image = predictor.visual(outputs, img_info, predictor.confthre)
         if save_result:
-            save_folder = os.path.join(
-                vis_folder, time.strftime("%Y_%m_%d_%H_%M_%S", current_time)
-            )
+            # save_folder = os.path.join(
+            #     vis_folder, time.strftime("%Y_%m_%d_%H_%M_%S", current_time)
+            # )
+            save_folder = os.path.join(vis_folder, "test")
             os.makedirs(save_folder, exist_ok=True)
             save_file_name = os.path.join(save_folder, os.path.basename(image_name))
             logger.info("Saving detection result in {}".format(save_file_name))

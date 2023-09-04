@@ -61,33 +61,34 @@ class Processor():
             file_list = os.listdir(image_dir)
             sampled_list = random.sample(file_list, num_images)
 
+            img_list_dict = []
+            for img in sampled_list:
+                for item in json_data["images"]:
+                    if item["file_name"] == img:
+                        img_list_dict.append(item)
+            sorted_img_list_dict = sorted(img_list_dict, key=lambda d: d['id']) 
             cur_id = 0
             cur_annot_id = 0
-            for img in sampled_list:
-                try:
-                    for item in json_data["images"]:
-                        if item["file_name"] == img:
-                            idx = item["id"]
-                            dict["images"].append(item)
-                            dict["images"][-1]["id"] = cur_id
-                            for annot in json_data["annotations"]:
-                                if annot["image_id"] == idx:
-                                    dict["annotations"].append(annot)
-                                    dict["annotations"][-1]["image_id"] = cur_id
-                                    dict["annotations"][-1]["id"] = cur_annot_id
-                                    cur_annot_id += 1
-                    cur_id += 1
+            for item in sorted_img_list_dict:
+                dict["images"].append(item)
+                idx = item["id"]
+                dict[-1]["id"] = cur_id
+                for annot in json_data["annotations"]:
+                    if annot["image_id"] == idx:
+                        dict["annotations"].append(annot)
+                        dict["annotations"][-1]["image_id"] = cur_id
+                        dict["annotations"][-1]["id"] = cur_annot_id
+                        cur_annot_id += 1
+                cur_id += 1
 
-                    new_name = os.path.join(new_image_dir)
-                    shutil.copy(image_dir + "/" + img, new_name + "/" + img)   
-                except:
-                    continue
+                new_name = os.path.join(new_image_dir)
+                shutil.copy(image_dir + "/" + img, new_name)
             with open(new_annot_dir + "/" + file_name, 'w') as file:
                 json.dump(dict, file)
 
 
     def sample_selection(self, annot_path, new_annot_dir, image_dir, new_image_dir, file_name):
-            '''특정 데이터셋으로부터 num_images 만큼의 이미지를 랜덤하게 선택하고, 이를 annotation과 함께 기존 path에서 new_path로 이동하는 함수
+            '''특정 데이터셋으로부터 특정 이미지에 대한 annotation을 모두 선택하고, 이를 annotation과 함께 기존 path에서 new_path로 이동하는 함수
             -file_name은 이동했을 때의 annotation 파일명
             -랜덤 데이터셋 추출-
             annot_path: 기존 annotation 파일 경로
@@ -101,28 +102,30 @@ class Processor():
                 json_data = json.load(f)
                 dict = {"info": json_data["info"], "licenses": json_data["licenses"], "categories": json_data["categories"], "images": [], "annotations" : []}
                 file_list = os.listdir(image_dir)
+                sampled_list = file_list
 
+                img_list_dict = []
+                for img in sampled_list:
+                    for item in json_data["images"]:
+                        if item["file_name"] == img:
+                            img_list_dict.append(item)
+                sorted_img_list_dict = sorted(img_list_dict, key=lambda d: d['id']) 
                 cur_id = 0
                 cur_annot_id = 0
-                for img in file_list:
-                    try:
-                        for item in json_data["images"]:
-                            if item["file_name"] == img:
-                                idx = item["id"]
-                                dict["images"].append(item)
-                                dict["images"][-1]["id"] = cur_id
-                                for annot in json_data["annotations"]:
-                                    if annot["image_id"] == idx:
-                                        dict["annotations"].append(annot)
-                                        dict["annotations"][-1]["image_id"] = cur_id
-                                        dict["annotations"][-1]["id"] = cur_annot_id
-                                        cur_annot_id += 1
-                        cur_id += 1
+                for item in sorted_img_list_dict:
+                    dict["images"].append(item)
+                    idx = item["id"]
+                    dict[-1]["id"] = cur_id
+                    for annot in json_data["annotations"]:
+                        if annot["image_id"] == idx:
+                            dict["annotations"].append(annot)
+                            dict["annotations"][-1]["image_id"] = cur_id
+                            dict["annotations"][-1]["id"] = cur_annot_id
+                            cur_annot_id += 1
+                    cur_id += 1
 
-                        new_name = os.path.join(new_image_dir)
-                        shutil.copy(image_dir + "/" + img, new_name + "/" + img)   
-                    except:
-                        continue
+                    new_name = os.path.join(new_image_dir)
+                    shutil.copy(image_dir + "/" + img, new_name)
                 with open(new_annot_dir + "/" + file_name, 'w') as file:
                     json.dump(dict, file)
 

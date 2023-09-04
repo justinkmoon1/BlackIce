@@ -94,8 +94,8 @@ class Predictor(object):
         self,
         model,
         confthre=0.01,
-        nmsthre=0.65,
-        test_size=(640, 640),
+        nmsthre=0.45,
+        test_size=(416, 416),
         cls_names=COCO_CLASSES,
         trt_file=None,
         decoder=None,
@@ -103,7 +103,7 @@ class Predictor(object):
         self.model = model
         self.cls_names = cls_names
         self.decoder = decoder
-        self.num_classes = 80
+        self.num_classes = 5
         self.confthre = confthre
         self.nmsthre = nmsthre
         self.test_size = test_size
