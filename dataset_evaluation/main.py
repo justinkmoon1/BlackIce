@@ -8,6 +8,7 @@ from yolox.models.yolox import YOLOX
 import torch
 from yolox.exp import get_exp
 from exps.default.yolox_tiny import MyExp
+from tools.demo import vis
 def postprocessing(inference_results, ratio, input_shape, nms_thr=0.45, score_thr=0.3):
     predictions = demo_postprocess(inference_results, input_shape)[0]
 
@@ -123,14 +124,21 @@ def get_trained_model(experiment, weights):
     return model
 
 # 경로 설정
-DATA_PATH = "./Test_Black/test"
-ANNOT_PATH = "ID2TE_Black.json"
+DATA_PATH = "Bounding_Boxes_Check_Train.v1i.coco/train"
+ANNOT_PATH = "Bounding_Boxes_Check_Train.v1i.coco\_annotations.coco.json"
 MODEL_PATH = "YOLOX_outputs/yolox_tiny/BG112.pth"
 
 # data read
 with open(ANNOT_PATH, 'r') as f:
     json_data = json.load(f)
-img_list = os.listdir(DATA_PATH)
+img_list = []
+
+# img_list_dict = []
+# for img in img_list:
+#     for item in json_data["images"]:
+#         if item["file_name"] == img:
+#             img_list_dict.append(item)
+
 
 # evaluator 객체
 evaluator = Evaluator(DATA_PATH, ANNOT_PATH, MODEL_PATH)
@@ -142,17 +150,22 @@ model.load_state_dict(ckpt["model"])
 predictor = Predictor(model, exps)
 cnt = 0
 gt_boxes = {0: 0, 1: 0, 2: 0, 3:0, 4: 0}
+for item in json_data["images"]:
+    if item["file_name"] in img_list:
+        continue
+    img_list.append(item["file_name"])
+
 for i in range(len(img_list)):
-    if i > 5:
-        break
     actual_bbox, actual_class = evaluator.read_data(DATA_PATH + "/" + img_list[i], i)
+    #print(actual_bbox, actual_class)
     print(f"For image {i}: GT = {len(actual_bbox)}")
+    #vis_res, out_box, out_class = vis(img, actual_bbox, [0.8 for i in range(len(actual_bbox))], cls, cls_conf, self.cls_names)
     for c in actual_class:
         gt_boxes[c] += 1
     prediction_list, info = predictor.inference(DATA_PATH + "/" + img_list[i])
     #print(len(prediction_list))
     result_image, result_box, result_class = predictor.visual(prediction_list, info)
-    print(f"For image {i} : {len(result_box)}")
+    #print(f"For image {i} : {len(result_box)}")
     cv2.imwrite(f"YOLOX_outputs/yolox_tiny/vis_res/img{i}.jpg", result_image)
     if prediction_list == None:
         continue
