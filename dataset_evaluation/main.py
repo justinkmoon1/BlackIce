@@ -124,9 +124,9 @@ def get_trained_model(experiment, weights):
     return model
 
 # 경로 설정
-DATA_PATH = "Bounding_Boxes_Check_Train.v1i.coco/train"
-ANNOT_PATH = "Bounding_Boxes_Check_Train.v1i.coco\_annotations.coco.json"
-MODEL_PATH = "YOLOX_outputs/yolox_tiny/BG112.pth"
+DATA_PATH = "Test Set Black Final/train"
+ANNOT_PATH = "Test Set Black Final\_annotations.coco.json"
+MODEL_PATH = "YOLOX_outputs/yolox_tiny/AIH.pth"
 
 # data read
 with open(ANNOT_PATH, 'r') as f:
@@ -157,14 +157,27 @@ for item in json_data["images"]:
 
 for i in range(len(img_list)):
     actual_bbox, actual_class = evaluator.read_data(DATA_PATH + "/" + img_list[i], i)
+    gt_bbox, gt_class = np.array(actual_bbox), np.array(actual_class)
     #print(actual_bbox, actual_class)
+    # for j in range(len(actual_bbox)):
+    #     np.append(gt_bbox[j], 1)
+    #     np.append(gt_bbox[j], 1)
+    #     np.append(gt_bbox[j], gt_class[j])
+
+
     print(f"For image {i}: GT = {len(actual_bbox)}")
+    gt_info = {"ratio": 1, "raw_img": "img"}
     #vis_res, out_box, out_class = vis(img, actual_bbox, [0.8 for i in range(len(actual_bbox))], cls, cls_conf, self.cls_names)
-    for c in actual_class:
-        gt_boxes[c] += 1
+    # gt_image, gt_box, gt_class = predictor.visual(gt_bbox, gt_info)
+    # cv2.imwrite(f"YOLOX_outputs/yolox_tiny/vis_res/img{i}_gt.jpg", gt_image)
     prediction_list, info = predictor.inference(DATA_PATH + "/" + img_list[i])
     #print(len(prediction_list))
-    result_image, result_box, result_class = predictor.visual(prediction_list, info)
+    try:
+        result_image, result_box, result_class = predictor.visual(prediction_list, info)
+    except:
+        continue
+    for c in actual_class:
+        gt_boxes[c] += 1
     #print(f"For image {i} : {len(result_box)}")
     cv2.imwrite(f"YOLOX_outputs/yolox_tiny/vis_res/img{i}.jpg", result_image)
     if prediction_list == None:
@@ -177,6 +190,7 @@ fp = evaluator.cnts[0][0]
 tp = evaluator.cnts[0][1]
 
 print(f"{evaluator.cnts}\n tp: {tp}, fp: {fp}, tn: {gt_boxes[0] - tp}")
+print(f"Recall: {tp / (tp + (gt_boxes[0] + gt_boxes[1] - tp))}")
 print(f"ground truth: {gt_boxes}")
 # 전체 metric 계산
 #ap, raw_metric, f1_score = evaluator.get_results()

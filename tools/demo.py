@@ -174,15 +174,17 @@ class Predictor(object):
         #print(output)
         if output is None:
             return img
-        output = output.cpu()
-
+        try:
+            output = output.cpu()
+        except: 
+            output = output
         bboxes = output[:, 0:4]
         # preprocessing: resize
         bboxes /= ratio
 
         cls = output[:, 6]
         scores = output[:, 4] * output[:, 5]
-
+        
         vis_res, out_box, out_class = vis(img, bboxes, scores, cls, cls_conf, self.cls_names)
         return vis_res, out_box, out_class
 
@@ -210,6 +212,35 @@ def image_demo(predictor, vis_folder, path, current_time, save_result):
         if ch == 27 or ch == ord("q") or ch == ord("Q"):
             break
 
+
+def custom_image_demo(predictor, vis_folder, path, file_name, save_result):
+    if os.path.isdir(path):
+        files = get_image_list(path)
+    else:
+        files = [path]
+    files.sort()
+    for image_name in files:
+        try:
+            outputs, img_info = predictor.inference(image_name)
+            
+            result_image, a, b = predictor.visual(outputs, img_info, predictor.confthre)
+
+            #result_image = predictor.visual(outputs, img_info, predictor.confthre)
+            
+            if save_result:
+                # save_folder = os.path.join(
+                #     vis_folder, time.strftime("%Y_%m_%d_%H_%M_%S", current_time)
+                # )
+                save_folder = os.path.join(vis_folder, file_name)
+                os.makedirs(save_folder, exist_ok=True)
+                save_file_name = os.path.join(save_folder, os.path.basename(image_name))
+                logger.info("Saving detection result in {}".format(save_file_name))
+                cv2.imwrite(save_file_name, result_image)
+            ch = cv2.waitKey(0)
+            if ch == 27 or ch == ord("q") or ch == ord("Q"):
+                break
+        except:
+            continue
 
 def imageflow_demo(predictor, vis_folder, current_time, args):
     cap = cv2.VideoCapture(args.path if args.demo == "video" else args.camid)
