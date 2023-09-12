@@ -174,10 +174,8 @@ class Predictor(object):
         #print(output)
         if output is None:
             return img
-        try:
-            output = output.cpu()
-        except: 
-            output = output
+        
+        output = output.cpu()
         bboxes = output[:, 0:4]
         # preprocessing: resize
         bboxes /= ratio

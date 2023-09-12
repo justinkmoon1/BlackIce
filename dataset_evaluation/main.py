@@ -9,6 +9,7 @@ import torch
 from yolox.exp import get_exp
 from exps.default.yolox_tiny import MyExp
 from tools.demo import vis
+import tensorflow as tf
 def postprocessing(inference_results, ratio, input_shape, nms_thr=0.45, score_thr=0.3):
     predictions = demo_postprocess(inference_results, input_shape)[0]
 
@@ -155,21 +156,24 @@ for item in json_data["images"]:
         continue
     img_list.append(item["file_name"])
 
+
 for i in range(len(img_list)):
     actual_bbox, actual_class = evaluator.read_data(DATA_PATH + "/" + img_list[i], i)
-    gt_bbox, gt_class = np.array(actual_bbox), np.array(actual_class)
-    #print(actual_bbox, actual_class)
-    # for j in range(len(actual_bbox)):
-    #     np.append(gt_bbox[j], 1)
-    #     np.append(gt_bbox[j], 1)
-    #     np.append(gt_bbox[j], gt_class[j])
+    gt_bbox = actual_bbox
+    gt_class = actual_class
+
+    for j in range(len(actual_bbox)):
+        gt_bbox[j].append(1)
+        gt_bbox[j].append(1)
+        gt_bbox[j].append(gt_class[j])
 
 
+    gt_bbox = np.asarray(gt_bbox)
+    gt_tensor = tf.convert_to_tensor(gt_bbox)
     print(f"For image {i}: GT = {len(actual_bbox)}")
-    gt_info = {"ratio": 1, "raw_img": "img"}
-    #vis_res, out_box, out_class = vis(img, actual_bbox, [0.8 for i in range(len(actual_bbox))], cls, cls_conf, self.cls_names)
-    # gt_image, gt_box, gt_class = predictor.visual(gt_bbox, gt_info)
-    # cv2.imwrite(f"YOLOX_outputs/yolox_tiny/vis_res/img{i}_gt.jpg", gt_image)
+    gt_info = {"ratio": 1, "raw_img": cv2.imread(DATA_PATH + "/" + img_list[i])}
+    gt_image, gt_box, gt_class = predictor.visual(gt_tensor, gt_info)
+    cv2.imwrite(f"YOLOX_outputs/yolox_tiny/vis_res/img{i}_gt.jpg", gt_image)
     prediction_list, info = predictor.inference(DATA_PATH + "/" + img_list[i])
     #print(len(prediction_list))
     try:
