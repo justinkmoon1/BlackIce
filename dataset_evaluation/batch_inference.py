@@ -2,13 +2,12 @@ import os
 import json
 import cv2
 import numpy as np
-from dataset_evaluation.evaluator import Evaluator
-from tools.demo import Predictor
-from tools.demo import custom_image_demo
+from evaluator import Evaluator
+from yolox.tools.demo import Predictor
+from yolox.tools.demo import custom_image_demo
 from yolox.models.yolox import YOLOX
 import torch
 from yolox.exp import get_exp
-from exps.default.yolox_tiny import MyExp
 import time
 
 DATA_PATH = "Test Set Mixed Final/train"

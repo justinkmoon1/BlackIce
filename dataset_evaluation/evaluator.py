@@ -2,8 +2,7 @@
 """
 implement calculation of metrics (AP, f1 score, etc) from confusion matrix
 """
-
-from tools.demo import Predictor
+from yolox.tools.demo import Predictor
 from yolox.exp.build import get_exp
 from yolox.models.yolox import YOLOX
 from yolox.utils.boxes import bboxes_iou
