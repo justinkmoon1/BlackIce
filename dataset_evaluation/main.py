@@ -2,13 +2,12 @@ import os
 import json
 import cv2
 import numpy as np
-from dataset_evaluation.evaluator import Evaluator
-from tools.demo import Predictor
+from evaluator import Evaluator
+from yolox.tools.demo import Predictor
 from yolox.models.yolox import YOLOX
 import torch
 from yolox.exp import get_exp
-from exps.default.yolox_tiny import MyExp
-from tools.demo import vis
+from yolox.tools.demo import vis
 import tensorflow as tf
 def postprocessing(inference_results, ratio, input_shape, nms_thr=0.45, score_thr=0.3):
     predictions = demo_postprocess(inference_results, input_shape)[0]
@@ -125,8 +124,8 @@ def get_trained_model(experiment, weights):
     return model
 
 # 경로 설정
-DATA_PATH = "Test Set Black Final/train"
-ANNOT_PATH = "Test Set Black Final\_annotations.coco.json"
+DATA_PATH = "Test Set White Final/train"
+ANNOT_PATH = "Test Set White Final\_annotations.coco.json"
 MODEL_PATH = "YOLOX_outputs/yolox_tiny/AIH.pth"
 
 # data read
@@ -166,10 +165,12 @@ for i in range(len(img_list)):
         gt_bbox[j].append(1)
         gt_bbox[j].append(1)
         gt_bbox[j].append(gt_class[j])
+        gt_bbox[j][2] = gt_bbox[j][0] + gt_bbox[j][2]
+        gt_bbox[j][3] = gt_bbox[j][1] + gt_bbox[j][3]
 
 
-    gt_bbox = np.asarray(gt_bbox)
-    gt_tensor = tf.convert_to_tensor(gt_bbox)
+    print(gt_bbox)
+    gt_tensor = torch.FloatTensor(gt_bbox)
     print(f"For image {i}: GT = {len(actual_bbox)}")
     gt_info = {"ratio": 1, "raw_img": cv2.imread(DATA_PATH + "/" + img_list[i])}
     gt_image, gt_box, gt_class = predictor.visual(gt_tensor, gt_info)
