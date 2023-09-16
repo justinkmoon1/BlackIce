@@ -66,13 +66,15 @@ class Processor():
                 for item in json_data["images"]:
                     if item["file_name"] == img:
                         img_list_dict.append(item)
+                new_name = os.path.join(new_image_dir)
+                shutil.copy(image_dir + "/" + img, new_name)
             sorted_img_list_dict = sorted(img_list_dict, key=lambda d: d['id']) 
             cur_id = 0
             cur_annot_id = 0
             for item in sorted_img_list_dict:
                 dict["images"].append(item)
                 idx = item["id"]
-                dict[-1]["id"] = cur_id
+                dict["images"][-1]["id"] = cur_id
                 for annot in json_data["annotations"]:
                     if annot["image_id"] == idx:
                         dict["annotations"].append(annot)
@@ -81,8 +83,8 @@ class Processor():
                         cur_annot_id += 1
                 cur_id += 1
 
-                new_name = os.path.join(new_image_dir)
-                shutil.copy(image_dir + "/" + img, new_name)
+                
+                
             with open(new_annot_dir + "/" + file_name, 'w') as file:
                 json.dump(dict, file)
 
@@ -109,6 +111,8 @@ class Processor():
                     for item in json_data["images"]:
                         if item["file_name"] == img:
                             img_list_dict.append(item)
+                    new_name = os.path.join(new_image_dir)
+                    shutil.copy(image_dir + "/" + img, new_name)
                 sorted_img_list_dict = sorted(img_list_dict, key=lambda d: d['id']) 
                 cur_id = 0
                 cur_annot_id = 0
@@ -123,9 +127,7 @@ class Processor():
                             dict["annotations"][-1]["id"] = cur_annot_id
                             cur_annot_id += 1
                     cur_id += 1
-
-                    new_name = os.path.join(new_image_dir)
-                    shutil.copy(image_dir + "/" + img, new_name)
+                    
                 with open(new_annot_dir + "/" + file_name, 'w') as file:
                     json.dump(dict, file)
 

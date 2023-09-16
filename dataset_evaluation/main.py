@@ -124,8 +124,8 @@ def get_trained_model(experiment, weights):
     return model
 
 # 경로 설정
-DATA_PATH = "Test Set White Final/train"
-ANNOT_PATH = "Test Set White Final\_annotations.coco.json"
+DATA_PATH = "Test Set Final Resize/train"
+ANNOT_PATH = "Test Set Final Resize/_annotations.coco.json"
 MODEL_PATH = "YOLOX_outputs/yolox_tiny/AIH.pth"
 
 # data read
@@ -169,9 +169,8 @@ for i in range(len(img_list)):
         gt_bbox[j][3] = gt_bbox[j][1] + gt_bbox[j][3]
 
 
-    print(gt_bbox)
     gt_tensor = torch.FloatTensor(gt_bbox)
-    print(f"For image {i}: GT = {len(actual_bbox)}")
+    #print(f"For image {i}: GT = {len(actual_bbox)}")
     gt_info = {"ratio": 1, "raw_img": cv2.imread(DATA_PATH + "/" + img_list[i])}
     gt_image, gt_box, gt_class = predictor.visual(gt_tensor, gt_info)
     cv2.imwrite(f"YOLOX_outputs/yolox_tiny/vis_res/img{i}_gt.jpg", gt_image)
@@ -181,6 +180,7 @@ for i in range(len(img_list)):
         result_image, result_box, result_class = predictor.visual(prediction_list, info)
     except:
         continue
+
     for c in actual_class:
         gt_boxes[c] += 1
     #print(f"For image {i} : {len(result_box)}")
@@ -191,11 +191,17 @@ for i in range(len(img_list)):
     
     # evaluator.put_data(prediction_bbox, prediction_class, actual_bbox, actual_class)
     evaluator.put_data(result_box, result_class, actual_bbox, actual_class)
-fp = evaluator.cnts[0][0]
-tp = evaluator.cnts[0][1]
+fp0 = evaluator.cnts[0][0]
+fp1 = evaluator.cnts[1][0]
+tp0 = evaluator.cnts[0][1]
+tp1 = evaluator.cnts[1][1]
+print(gt_boxes)
+print(f"{evaluator.cnts}\n tp: {tp0}, fp: {fp0}, tn: {gt_boxes[0] - tp0}")
+print(f"{evaluator.cnts}\n tp: {tp1}, fp: {fp1}, tn: {gt_boxes[1] - tp1}")
 
-print(f"{evaluator.cnts}\n tp: {tp}, fp: {fp}, tn: {gt_boxes[0] - tp}")
-print(f"Recall: {tp / (tp + (gt_boxes[0] + gt_boxes[1] - tp))}")
+print(f"Recall 0: {tp0 / (tp0 + gt_boxes[0] - tp0)}")
+print(f"Recall 1: {tp1 / (tp1 + gt_boxes[1] - tp1)}")
+
 print(f"ground truth: {gt_boxes}")
 # 전체 metric 계산
 #ap, raw_metric, f1_score = evaluator.get_results()

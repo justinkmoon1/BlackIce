@@ -1,17 +1,17 @@
 from Processor import Processor
 
-ANNOT_PATH = "newdata-20230809T180348Z-001/newdata/train/ID2TR.json"
+ANNOT_PATH = "Test Set Black Final/_annotations.coco.json"
 
-NEW_ANNOT_PATH = "datasets/COCO/annotations/"
+NEW_ANNOT_PATH = "Test Set Augmentation"
 
-IMAGE_DIR = "newdata-20230809T180348Z-001/newdata/test"
+IMAGE_DIR = "Test Set Black Final/train"
 
-NEW_IMAGE_DIR = "datasets/COCO/train2017"
+NEW_IMAGE_DIR = "Test Set Augmentation/train"
 
-FILE_NAME = "ID2TR.json"
+FILE_NAME = "_annotations.coco.json"
 
 
 processor = Processor()
 
-processor.sample_selection(ANNOT_PATH, NEW_ANNOT_PATH, IMAGE_DIR, NEW_IMAGE_DIR, FILE_NAME)
+processor.random_selection(ANNOT_PATH, NEW_ANNOT_PATH, IMAGE_DIR, NEW_IMAGE_DIR, 3, FILE_NAME)
 
