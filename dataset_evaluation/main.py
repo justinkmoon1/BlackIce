@@ -196,8 +196,8 @@ fp1 = evaluator.cnts[1][0]
 tp0 = evaluator.cnts[0][1]
 tp1 = evaluator.cnts[1][1]
 print(gt_boxes)
-print(f"{evaluator.cnts}\n tp: {tp0}, fp: {fp0}, tn: {gt_boxes[0] - tp0}")
-print(f"{evaluator.cnts}\n tp: {tp1}, fp: {fp1}, tn: {gt_boxes[1] - tp1}")
+print(f"{evaluator.cnts}\n tp: {tp0}, fp: {fp0}, fn: {gt_boxes[0] - tp0}")
+print(f"{evaluator.cnts}\n tp: {tp1}, fp: {fp1}, fn: {gt_boxes[1] - tp1}")
 
 print(f"Recall 0: {tp0 / (tp0 + gt_boxes[0] - tp0)}")
 print(f"Recall 1: {tp1 / (tp1 + gt_boxes[1] - tp1)}")

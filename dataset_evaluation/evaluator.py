@@ -92,22 +92,26 @@ class Evaluator():
 
         #print(actual_bbox_list)
         #print(len(pred_label_list), len(pred_bbox_list))
-        self.count_result(actual_label_list, actual_bbox_list, pred_label_list, pred_bbox_list, 0.1)
+        self.count_result(actual_label_list, actual_bbox_list, pred_label_list, pred_bbox_list, 0.5)
 
     def count_result(self, actual_label_list, actual_bbox_list, pred_label_list, pred_bbox_list, iou_thr):
-        
+        masking_gt = [0 for x in range(len(actual_bbox_list))]
         # prediction bbox 를 for loop 돌면서 actual 과 비교
         for i, pred_bbox in enumerate(pred_bbox_list):
             # iou 비교 
-            
             for j, actual_bbox in enumerate(actual_bbox_list):
                 iou = self.calc_iou(pred_bbox,actual_bbox)
                 
                 # label이 같으면 tp. 아니면 fp
                 if iou > iou_thr:
                     if pred_label_list[i] == actual_label_list[j]:
-                        self.cnts[pred_label_list[i]][1] += 1
+                        if masking_gt[j] == 0:
+                            self.cnts[pred_label_list[i]][1] += 1
+                        
+                        masking_gt[j] = 1
+
                     else:
+                            
                         self.cnts[pred_label_list[i]][0] += 1
                         
                         self.fp_cnts[pred_label_list[i]] += 1

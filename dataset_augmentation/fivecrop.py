@@ -31,25 +31,26 @@ transform3 = A.Compose([
 
 with open(ANNOT_PATH, 'r') as f:
     json_data = json.load(f)
-    cur_id = json_data["images"][-1]["id"] + 1
-    cur_annot_id = json_data["annotations"][-1]["id"] + 1
-    for img in json_data["images"]:
+    new_dict = json_data
+    cur_id = new_dict["images"][-1]["id"] + 1
+    cur_annot_id = new_dict["annotations"][-1]["id"] + 1
+    for img in new_dict["images"]:
         name = img["file_name"]
         idx =  img["id"]
         image = cv2.imread(DATA_PATH + "/" + name)
         
         bbox = []
         label = []
-        for annot in json_data["annotations"]:
+        for annot in new_dict["annotations"]:
              if annot["image_id"] == idx:
                 lst = annot["bbox"]
                 bbox.append(lst)
                 label.append(annot["category_id"])
 
         transformed = transform(image=image, bboxes=bbox, class_labels=label)
-        transformed1 = transform1(image=image, bboxes=bbox, class_labels=label)
-        transformed2 = transform2(image=image, bboxes=bbox, class_labels=label)
-        transformed3 = transform3(image=image, bboxes=bbox, class_labels=label)
+        transformed1 = transform(image=image, bboxes=bbox, class_labels=label)
+        transformed2 = transform(image=image, bboxes=bbox, class_labels=label)
+        transformed3 = transform(image=image, bboxes=bbox, class_labels=label)
         
         bbox0 = transformed['bboxes']
         label0 = transformed['class_labels']
@@ -62,11 +63,12 @@ with open(ANNOT_PATH, 'r') as f:
 
         bbox3 = transformed3['bboxes']
         label3 = transformed3['class_labels']
-
+        print("check A")
         cv2.imwrite(DATA_PATH + "/" + name[:-4] + "transformed" + "0" + ".jpg", transformed['image'])
         cv2.imwrite(DATA_PATH + "/" + name[:-4] + "transformed" + "1" + ".jpg", transformed1['image'])
         cv2.imwrite(DATA_PATH + "/" + name[:-4] + "transformed" + "2" + ".jpg", transformed2['image'])
         cv2.imwrite(DATA_PATH + "/" + name[:-4] + "transformed" + "3" + ".jpg", transformed3['image'])
+        print("check B")
         for i in range(4):
             file_name = name[:-4] + "transformed" + str(i) + ".jpg"
             im = cv2.imread(DATA_PATH + "/" + file_name)
@@ -98,7 +100,7 @@ with open(ANNOT_PATH, 'r') as f:
                     cur_annot_id += 1
 
             cur_id += 1
-        
+        print("check C")
     with open(NEW_ANNOT_DIR + FILE_NAME, 'w') as file:
         json.dump(json_data, file)
 
