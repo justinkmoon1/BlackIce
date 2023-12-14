@@ -263,7 +263,7 @@ def imageflow_demo(predictor, vis_folder, current_time, args):
         ret_val, frame = cap.read()
         if ret_val:
             outputs, img_info = predictor.inference(frame)
-            result_frame = predictor.visual(outputs[0], img_info, predictor.confthre)
+            result_frame = predictor.visual(outputs, img_info, predictor.confthre)
             if args.save_result:
                 vid_writer.write(result_frame[0])
             else:
