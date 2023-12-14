@@ -79,7 +79,6 @@ def multiclass_nms_class_agnostic(boxes, scores, nms_thr, score_thr):
         )
     return dets
 
-
 def nms(boxes, scores, nms_thr):
     """Single class NMS implemented in Numpy."""
     x1 = boxes[:, 0]
@@ -124,10 +123,10 @@ def get_trained_model(experiment, weights):
     return model
 
 # 경로 설정
-DATA_PATH = "Test Set Final Resize/train"
-ANNOT_PATH = "Test Set Final Resize/_annotations.coco.json"
-MODEL_PATH = "YOLOX_outputs/yolox_tiny/AIH.pth"
-
+DATA_PATH = "datasets/COCO/test2017"
+ANNOT_PATH = "datasets/COCO/annotations/_annotations.coco.json"
+MODEL_PATH = "YOLOX_Outputs/yolox_tiny/01001_best.pth"
+ 
 # data read
 with open(ANNOT_PATH, 'r') as f:
     json_data = json.load(f)
@@ -199,7 +198,9 @@ print(gt_boxes)
 print(f"{evaluator.cnts}\n tp: {tp0}, fp: {fp0}, fn: {gt_boxes[0] - tp0}")
 print(f"{evaluator.cnts}\n tp: {tp1}, fp: {fp1}, fn: {gt_boxes[1] - tp1}")
 
+print(f"Precision 0: {tp0 / (tp0 + fp0)}")
 print(f"Recall 0: {tp0 / (tp0 + gt_boxes[0] - tp0)}")
+print(f"Precision 1: {tp1 / (tp1 + fp1)}")
 print(f"Recall 1: {tp1 / (tp1 + gt_boxes[1] - tp1)}")
 
 print(f"ground truth: {gt_boxes}")

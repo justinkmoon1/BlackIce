@@ -21,7 +21,7 @@ def get_yolox_datadir():
     this function will return value of the environment variable. Otherwise, use data
     """
     yolox_datadir = os.getenv("YOLOX_DATADIR", None)
-    yolox_datadir = "/content/drive/MyDrive/AIHUB_Data/Experiment"
+    #yolox_datadir = "/content/drive/MyDrive/AIHUB_Data/Experiment"
 
     if yolox_datadir is None:
         import yolox

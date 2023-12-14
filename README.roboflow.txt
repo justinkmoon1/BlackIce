@@ -1,8 +1,8 @@
 
-Black Ice Final Test Set Resize - v1 2023-09-13 6:43pm
+DHC White - v1 2023-12-09 10:11pm
 ==============================
 
-This dataset was exported via roboflow.com on September 13, 2023 at 9:44 AM GMT
+This dataset was exported via roboflow.com on December 9, 2023 at 1:13 PM GMT
 
 Roboflow is an end-to-end computer vision platform that helps you
 * collaborate with your team on computer vision projects
@@ -17,8 +17,8 @@ visit https://github.com/roboflow/notebooks
 
 To find over 100k other datasets and pre-trained models, visit https://universe.roboflow.com
 
-The dataset includes 363 images.
-Black Ice are annotated in COCO format.
+The dataset includes 413 images.
+Blackice are annotated in COCO format.
 
 The following pre-processing was applied to each image:
 * Auto-orientation of pixel data (with EXIF-orientation stripping)

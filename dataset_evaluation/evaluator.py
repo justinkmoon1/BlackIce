@@ -92,7 +92,7 @@ class Evaluator():
 
         #print(actual_bbox_list)
         #print(len(pred_label_list), len(pred_bbox_list))
-        self.count_result(actual_label_list, actual_bbox_list, pred_label_list, pred_bbox_list, 0.5)
+        self.count_result(actual_label_list, actual_bbox_list, pred_label_list, pred_bbox_list, 0.25)
 
     def count_result(self, actual_label_list, actual_bbox_list, pred_label_list, pred_bbox_list, iou_thr):
         masking_gt = [0 for x in range(len(actual_bbox_list))]

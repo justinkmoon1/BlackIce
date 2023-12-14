@@ -196,16 +196,17 @@ def image_demo(predictor, vis_folder, path, current_time, save_result):
     for image_name in files:
         outputs, img_info = predictor.inference(image_name)
         result_image = predictor.visual(outputs, img_info, predictor.confthre)
+        
         #result_image = predictor.visual(outputs, img_info, predictor.confthre)
         if save_result:
-            # save_folder = os.path.join(
-            #     vis_folder, time.strftime("%Y_%m_%d_%H_%M_%S", current_time)
-            # )
-            save_folder = os.path.join(vis_folder, "test")
-            os.makedirs(save_folder, exist_ok=True)
+            save_folder = os.path.join(
+                vis_folder, time.strftime("%Y_%m_%d_%H_%M_%S", current_time)
+            )
+            # save_folder = os.path.join(vis_folder, "test")
+            # os.makedirs(save_folder, exist_ok=True)
             save_file_name = os.path.join(save_folder, os.path.basename(image_name))
             logger.info("Saving detection result in {}".format(save_file_name))
-            cv2.imwrite(save_file_name, result_image)
+            cv2.imwrite(save_file_name, result_image[0])
         ch = cv2.waitKey(0)
         if ch == 27 or ch == ord("q") or ch == ord("Q"):
             break
@@ -264,7 +265,7 @@ def imageflow_demo(predictor, vis_folder, current_time, args):
             outputs, img_info = predictor.inference(frame)
             result_frame = predictor.visual(outputs[0], img_info, predictor.confthre)
             if args.save_result:
-                vid_writer.write(result_frame)
+                vid_writer.write(result_frame[0])
             else:
                 cv2.namedWindow("yolox", cv2.WINDOW_NORMAL)
                 cv2.imshow("yolox", result_frame)
