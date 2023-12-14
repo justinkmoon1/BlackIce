@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 
-DATASET_PATH = "DHC OD2.v1i.coco/train"
+DATASET_PATH = "/Users/hanseoghui/Downloads/OD2/train"
 
 lst = []
 for image in os.listdir(DATASET_PATH):
@@ -21,9 +21,17 @@ lst = np.array(lst)
 
 plt.hist(lst, bins=30, range=(0,255), color='lightgreen', edgecolor='blue')
 
-plt.xlabel('Brightness')
-plt.ylabel('Frequency')
-plt.title('Brightness of images based on HSV model')
+fs_title = 18
+plt.title('Brightness of images based on HSV model', fontsize=fs_title)
 
-plt.show()
-print(lst.mean())
+fs_xylabel = 16
+plt.xlabel('Brightness', fontsize=fs_xylabel)
+plt.ylabel('Frequency', fontsize=fs_xylabel)
+
+fs_ticks = 14
+plt.xticks(fontsize=fs_ticks)
+plt.yticks(fontsize=fs_ticks)
+
+plt.savefig('/Users/hanseoghui/Downloads/brightness_OD2.jpg')
+#plt.show()
+#print(lst.mean())

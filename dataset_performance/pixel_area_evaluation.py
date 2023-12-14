@@ -4,8 +4,8 @@ import cv2
 import matplotlib.pyplot as plt
 import json
 
-DATASET_PATH = "DHC OD2.v1i.coco/train"
-ANNOT_PATH = "DHC OD2.v1i.coco/train/_annotations.coco.json"
+DATASET_PATH = "/Users/hanseoghui/Downloads/OD2/train"
+ANNOT_PATH = "/Users/hanseoghui/Downloads/OD2/train/_annotations.coco.json"
 
 lst = []
 with open(ANNOT_PATH, 'r') as f:
@@ -31,13 +31,16 @@ lst = np.array(lst)
 print(lst.mean())
 plt.hist(lst, bins=30, range=(0,100), color='lightgreen', edgecolor='blue')
 
-plt.xlabel('Proportion of instance pixel area (%)')
-plt.ylabel('Frequency')
-plt.title('Proportion of instance pixel area')
+fs_title = 18
+plt.title('Proportion of instance pixel area', fontsize=fs_title)
 
-plt.show()
+fs_xylabel = 16
+plt.xlabel('Proportion of instance pixel area (%)', fontsize=fs_xylabel)
+plt.ylabel('Frequency', fontsize=fs_xylabel)
 
-        
+fs_ticks = 14
+plt.xticks(fontsize=fs_ticks)
+plt.yticks(fontsize=fs_ticks)
 
-
-    
+plt.savefig('/Users/hanseoghui/Downloads/pixelarea_OD2.jpg')
+#plt.show()
